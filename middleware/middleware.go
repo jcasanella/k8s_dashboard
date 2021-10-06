@@ -42,3 +42,7 @@ func GetAlbumByID(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusNotFound, gin.H{"Message": "album not found"})
 }
+
+func GetTitle(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{"title": "This is a test"})
+}

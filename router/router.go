@@ -16,5 +16,11 @@ func Router() *gin.Engine {
 		v1.POST("/albums", middleware.PostAlbums)
 	}
 
+	router.LoadHTMLGlob("templates/*")
+	v2 := router.Group("/v2")
+	{
+		v2.GET("/albums", middleware.GetTitle)
+	}
+
 	return router
 }
