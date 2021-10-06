@@ -8,9 +8,13 @@ import (
 
 func Router() *gin.Engine {
 	router := gin.Default()
-	router.GET("/albums", middleware.GetAlbums)
-	router.GET("/albums/:id", middleware.GetAlbumByID)
-	router.POST("/albums", middleware.PostAlbums)
+
+	v1 := router.Group("/v1")
+	{
+		v1.GET("/albums", middleware.GetAlbums)
+		v1.GET("/albums/:id", middleware.GetAlbumByID)
+		v1.POST("/albums", middleware.PostAlbums)
+	}
 
 	return router
 }
