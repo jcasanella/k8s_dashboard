@@ -1,0 +1,12 @@
+<html>
+    <table>
+    {{ range $album := .albums }}
+        <tr>
+            <td>{{ .ID }}</td>
+            <td>{{ .Title }}</td>
+            <td>{{ .Artist }}</td>
+            <td>{{ .Price }}</td>
+        </tr>
+    {{ end }}
+    </table>
+</html>

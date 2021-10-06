@@ -44,5 +44,5 @@ func GetAlbumByID(c *gin.Context) {
 }
 
 func GetTitle(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{"title": "This is a test"})
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{"albums": albums})
 }
