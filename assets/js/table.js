@@ -16,17 +16,42 @@ function getAlbums() {
 
             var table_json = document.getElementById("table_json");
             var table = document.createElement("table");
+            table.classList.add("table", "table-striped", "table-hover");
 
+            createHeader(table);
+
+            var tBody = document.createElement("tbody");
             for (i = 0; i < data.length; i++) {
-                createRow(data[i], table);
+                createRow(data[i], tBody);
             }
-
+            table.appendChild(tBody);
             table_json.appendChild(table);
         }
         console.log(data);
     }).catch(error => {
         alert(error.message);
     });
+}
+
+function createHeader(table) {
+    var tHead = document.createElement("thead");
+    var row = document.createElement("tr");
+
+    createHeaderCell(row, "Id");
+    createHeaderCell(row, "Name");
+    createHeaderCell(row, "Title");
+    createHeaderCell(row, "Price");
+
+    tHead.appendChild(row);
+    table.appendChild(tHead);
+}
+
+function createHeaderCell(row, text) {
+    var th = document.createElement("th");
+    th.setAttribute("scope", "col");
+    var cell = document.createTextNode(text);
+    th.appendChild(cell);
+    row.appendChild(th);
 }
 
 function createRow(text, table) {
