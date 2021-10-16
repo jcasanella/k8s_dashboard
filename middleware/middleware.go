@@ -2,11 +2,9 @@ package middleware
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jcasanella/k8s_dashboard/models"
-
 )
 
 var albums []models.Album
@@ -15,14 +13,6 @@ func init() {
 	albums = append(albums, models.Album{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99})
 	albums = append(albums, models.Album{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99})
 	albums = append(albums, models.Album{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99})
-}
-
-func GetPath(c *gin.Context) {
-	if path, err := os.Getwd(); err != nil {
-		c.String(http.StatusOK, path)
-	} else {
-		c.String(http.StatusOK, "error")
-	}
 }
 
 func GetAlbums(c *gin.Context) {
