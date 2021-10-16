@@ -9,6 +9,7 @@ import (
 func main() {
 	router := router.Router()
 
+	router.Static("/assets", "./assets")
 	error := router.Run("localhost:8085")
 	log.Fatal(error)
 }
