@@ -1,11 +1,15 @@
 package main
 
 import (
+	"context"
 	"flag"
+	"fmt"
 	"log"
 	"path/filepath"
 
 	"github.com/jcasanella/k8s_dashboard/router"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 )
@@ -22,9 +26,21 @@ func main() {
 	flag.Parse()
 
 	// use the current context in kubeconfig
-	_, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
 		panic(err.Error())
+	}
+
+	c, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	pods, _ := c.CoreV1().Pods("dma").List(context.TODO(), v1.ListOptions{})
+	fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
+
+	for _, v := range pods.Items {
+		fmt.Printf("%s\n", v.Name)
 	}
 
 	router := router.Router()
