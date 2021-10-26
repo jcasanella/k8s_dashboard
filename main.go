@@ -43,6 +43,13 @@ func main() {
 		fmt.Printf("%s\n", v.Name)
 	}
 
+	cm, _ := c.CoreV1().ConfigMaps("dma").List(context.TODO(), v1.ListOptions{})
+	fmt.Printf("There are %d cm in the cluster\n", len(cm.Items))
+
+	for _, v := range cm.Items {
+		fmt.Printf("%s\n", v.Name)
+	}
+
 	router := router.Router()
 
 	error := router.Run("localhost:8085")

@@ -5,6 +5,10 @@
         <script src="/assets/js/bootstrap.bundle.min.js"></script>
     </head>
     <body>
+        <div class="container p-3 my-3 bg-dark text-white">
+            <h1 class="display-2">2 Pods</h1>
+            <h1 class="display-2">2 ConfigMaps</h1>
+        </div>
         <button onclick="getAlbums()">Test get albums</button>
          <table>
     {{ range $album := .albums }}
