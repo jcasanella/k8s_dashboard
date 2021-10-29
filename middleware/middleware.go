@@ -16,7 +16,6 @@ import (
 
 var albums []models.Album
 
-// var kubeconfig *string
 var clientSet *kubernetes.Clientset
 
 func init() {
@@ -70,6 +69,43 @@ func CountPods(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, len(pods.Items))
+}
+
+func ListPods(c *gin.Context) {
+	pods, err := clientSet.CoreV1().Pods("dma").List(context.TODO(), v1.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var names []models.Pod
+	for _, pod := range pods.Items {
+		names = append(names, models.Pod{Name: pod.Name})
+	}
+
+	c.IndentedJSON(http.StatusOK, names)
+}
+
+func ListConfigMaps(c *gin.Context) {
+	configMaps, err := clientSet.CoreV1().ConfigMaps("dma").List(context.TODO(), v1.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var names []models.ConfigMap
+	for _, configMap := range configMaps.Items {
+		names = append(names, models.ConfigMap{Name: configMap.Name})
+	}
+
+	c.IndentedJSON(http.StatusOK, names)
+}
+
+func CountConfigMaps(c *gin.Context) {
+	configMaps, err := clientSet.CoreV1().ConfigMaps("dma").List(context.TODO(), v1.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	c.IndentedJSON(http.StatusOK, len(configMaps.Items))
 }
 
 func getK8sClient() (*kubernetes.Clientset, error) {
