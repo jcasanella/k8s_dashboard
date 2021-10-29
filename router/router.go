@@ -23,5 +23,10 @@ func Router() *gin.Engine {
 		v2.GET("/albums", middleware.GetTitle)
 	}
 
+	k8sV1 := router.Group("/k8s/v1")
+	{
+		k8sV1.GET("/count", middleware.CountPods)
+	}
+
 	return router
 }

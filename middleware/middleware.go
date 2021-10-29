@@ -16,10 +16,19 @@ import (
 
 var albums []models.Album
 
+// var kubeconfig *string
+var clientSet *kubernetes.Clientset
+
 func init() {
 	albums = append(albums, models.Album{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99})
 	albums = append(albums, models.Album{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99})
 	albums = append(albums, models.Album{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99})
+
+	var err error
+	clientSet, err = getK8sClient()
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func GetAlbums(c *gin.Context) {
@@ -55,11 +64,6 @@ func GetTitle(c *gin.Context) {
 }
 
 func CountPods(c *gin.Context) {
-	clientSet, err := getK8sClient()
-	if err != nil {
-		panic(err.Error())
-	}
-
 	pods, err := clientSet.CoreV1().Pods("dma").List(context.TODO(), v1.ListOptions{})
 	if err != nil {
 		panic(err.Error())
