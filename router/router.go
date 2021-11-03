@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jcasanella/k8s_dashboard/middleware"
+	repsitory "github.com/jcasanella/k8s_dashboard/repository"
 )
 
 func Router() *gin.Engine {
@@ -27,8 +28,8 @@ func Router() *gin.Engine {
 	{
 		v1 := k8s.Group("/v1")
 		{
-			v1.GET("/pods/count", middleware.CountPods)
-			v1.GET("/pods", middleware.ListPods)
+			v1.GET("/pods/count", repsitory.CountPods)
+			v1.GET("/pods", repsitory.ListPods)
 
 			v1.GET("/configmaps", middleware.ListConfigMaps)
 			v1.GET("/configmaps/count", middleware.CountConfigMaps)

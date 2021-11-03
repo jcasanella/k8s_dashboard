@@ -2,16 +2,14 @@ package middleware
 
 import (
 	"context"
-	"flag"
 	"net/http"
-	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jcasanella/k8s_dashboard/configcontext"
 	"github.com/jcasanella/k8s_dashboard/models"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 )
 
 var albums []models.Album
@@ -62,29 +60,6 @@ func GetTitle(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{"albums": albums})
 }
 
-func CountPods(c *gin.Context) {
-	pods, err := clientSet.CoreV1().Pods("dma").List(context.TODO(), v1.ListOptions{})
-	if err != nil {
-		panic(err.Error())
-	}
-
-	c.IndentedJSON(http.StatusOK, len(pods.Items))
-}
-
-func ListPods(c *gin.Context) {
-	pods, err := clientSet.CoreV1().Pods("dma").List(context.TODO(), v1.ListOptions{})
-	if err != nil {
-		panic(err.Error())
-	}
-
-	var names []models.Pod
-	for _, pod := range pods.Items {
-		names = append(names, models.Pod{Name: pod.Name})
-	}
-
-	c.IndentedJSON(http.StatusOK, names)
-}
-
 func ListConfigMaps(c *gin.Context) {
 	configMaps, err := clientSet.CoreV1().ConfigMaps("dma").List(context.TODO(), v1.ListOptions{})
 	if err != nil {
@@ -109,17 +84,7 @@ func CountConfigMaps(c *gin.Context) {
 }
 
 func getK8sClient() (*kubernetes.Clientset, error) {
-	// Check kubernetes configs
-	var kubeconfig *string
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
-	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
-	}
-	flag.Parse()
-
-	// use the current context in kubeconfig
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	config, err := clientcmd.BuildConfigFromFlags("", *configcontext.Kubeconfig)
 	if err != nil {
 		panic(err.Error())
 	}
