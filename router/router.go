@@ -31,8 +31,8 @@ func Router() *gin.Engine {
 			v1.GET("/pods/count", repository.CountPods)
 			v1.GET("/pods", repository.ListPods)
 
-			v1.GET("/configmaps", middleware.ListConfigMaps)
-			v1.GET("/configmaps/count", middleware.CountConfigMaps)
+			v1.GET("/configmaps", repository.ListConfigMaps)
+			v1.GET("/configmaps/count", repository.CountConfigMaps)
 
 			v1.GET("namespaces", repository.ListNamespaces)
 		}

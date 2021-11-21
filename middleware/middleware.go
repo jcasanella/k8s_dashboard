@@ -1,31 +1,18 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jcasanella/k8s_dashboard/configcontext"
 	"github.com/jcasanella/k8s_dashboard/models"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 var albums []models.Album
-
-var clientSet *kubernetes.Clientset
 
 func init() {
 	albums = append(albums, models.Album{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99})
 	albums = append(albums, models.Album{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99})
 	albums = append(albums, models.Album{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99})
-
-	var err error
-	clientSet, err = getK8sClient()
-	if err != nil {
-		panic(err.Error())
-	}
 }
 
 func GetAlbums(c *gin.Context) {
@@ -58,36 +45,4 @@ func GetAlbumByID(c *gin.Context) {
 
 func GetTitle(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{"albums": albums})
-}
-
-func ListConfigMaps(c *gin.Context) {
-	configMaps, err := clientSet.CoreV1().ConfigMaps("dma").List(context.TODO(), v1.ListOptions{})
-	if err != nil {
-		panic(err.Error())
-	}
-
-	var names []models.ConfigMap
-	for _, configMap := range configMaps.Items {
-		names = append(names, models.ConfigMap{Name: configMap.Name})
-	}
-
-	c.IndentedJSON(http.StatusOK, names)
-}
-
-func CountConfigMaps(c *gin.Context) {
-	configMaps, err := clientSet.CoreV1().ConfigMaps("dma").List(context.TODO(), v1.ListOptions{})
-	if err != nil {
-		panic(err.Error())
-	}
-
-	c.IndentedJSON(http.StatusOK, len(configMaps.Items))
-}
-
-func getK8sClient() (*kubernetes.Clientset, error) {
-	config, err := clientcmd.BuildConfigFromFlags("", *configcontext.Kubeconfig)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return kubernetes.NewForConfig(config)
 }
