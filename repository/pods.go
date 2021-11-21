@@ -1,4 +1,4 @@
-package repsitory
+package repository
 
 import (
 	"context"
@@ -13,24 +13,21 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-type PodObject struct {
+type podObject struct {
 	Pod v1.PodInterface
 }
 
-var podObject *PodObject
-
-func init() {
-	var err error
+func newPod() *podObject {
 	clientSet, err := getK8sClient()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	podObject = &PodObject{Pod: clientSet.CoreV1().Pods("dma")}
+	return &podObject{Pod: clientSet.CoreV1().Pods("dma")}
 }
 
 func ListPods(c *gin.Context) {
-	pods, err := podObject.Pod.List(context.TODO(), meta.ListOptions{})
+	pods, err := newPod().Pod.List(context.TODO(), meta.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
@@ -44,7 +41,7 @@ func ListPods(c *gin.Context) {
 }
 
 func CountPods(c *gin.Context) {
-	pods, err := podObject.Pod.List(context.TODO(), meta.ListOptions{})
+	pods, err := newPod().Pod.List(context.TODO(), meta.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
