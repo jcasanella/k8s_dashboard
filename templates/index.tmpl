@@ -11,14 +11,6 @@
         </div>
         <button onclick="getAlbums()">Test get albums</button>
          <table>
-    {{ range $album := .albums }}
-        <tr>
-            <td>{{ .ID }}</td>
-            <td>{{ .Title }}</td>
-            <td>{{ .Artist }}</td>
-            <td>{{ .Price }}</td>
-        </tr>
-    {{ end }}
     </table>
 
     <div id="table_json"></div>

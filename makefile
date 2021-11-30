@@ -18,7 +18,6 @@ build: vet
 	echo "Building for linux and windows"
 	GOOS=linux GOARCH=386 go build -o ${OUTDIR}/${BINARY_NAME} main.go
 	GOOS=windows GOARCH=386 go build -o ${OUTDIR}/${BINARY_NAME}_win main.go
-.PHONY:build
 
 .PHONY:run
 run:
