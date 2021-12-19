@@ -1,3 +1,5 @@
+"use strict";
+
 class Client {
     static async getResponse(url) {
         const response = await fetch(url)
@@ -12,5 +14,5 @@ class Client {
 
 function getNamespace() {
     Client.getResponse('http://localhost:8085/v1/k8s/namespaces')
-        .then(console.log());
+        .then(console.log);
 }
