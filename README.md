@@ -1,5 +1,11 @@
 # Kubernetes dashboard
 
+## Start Minikube
+
+```
+minikube start --driver=docker
+```
+
 ## Namespaces Operations
 
 ### List
