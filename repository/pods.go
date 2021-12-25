@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jcasanella/k8s_dashboard/configcontext"
@@ -27,14 +28,24 @@ func newPod() *podObject {
 }
 
 func ListPods(c *gin.Context) {
-	pods, err := newPod().Pod.List(context.TODO(), meta.ListOptions{})
+	limitQuery := c.DefaultQuery("limit", "10")
+	limitValue, err := strconv.ParseInt(limitQuery, 10, 64)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	listOptions := &meta.ListOptions{
+		Limit: limitValue,
+	}
+
+	pods, err := newPod().Pod.List(context.TODO(), *listOptions)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	var names []models.Pod
 	for _, pod := range pods.Items {
-		names = append(names, models.Pod{Name: pod.Name})
+		names = append(names, models.Pod{Name: pod.Name, Continue: pods.ListMeta.Continue, RemainingItemCount: *pods.ListMeta.RemainingItemCount})
 	}
 
 	c.IndentedJSON(http.StatusOK, names)
