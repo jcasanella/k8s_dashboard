@@ -21,7 +21,7 @@ func newConfigmap() *configmapObject {
 		panic(err.Error())
 	}
 
-	return &configmapObject{Configmap: clientSet.CoreV1().ConfigMaps("default")}
+	return &configmapObject{Configmap: clientSet.CoreV1().ConfigMaps("dma")}
 }
 
 func ListConfigMaps(c *gin.Context) {

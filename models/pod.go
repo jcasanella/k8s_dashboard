@@ -1,5 +1,7 @@
 package models
 
 type Pod struct {
-	Name string `json:"name"`
+	Continue           string `json:"continue"`
+	Name               string `json:"name"`
+	RemainingItemCount int64  `json:"remainingitemcount"`
 }
