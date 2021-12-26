@@ -7,7 +7,7 @@ import (
 	repository "github.com/jcasanella/k8s_dashboard/repository"
 )
 
-func Router() *gin.Engine {
+func Router(client *repository.Client) *gin.Engine {
 	router := gin.Default()
 
 	router.Static("/assets", "./assets")
@@ -20,6 +20,8 @@ func Router() *gin.Engine {
 	router.GET("/favicon.ico", func(c *gin.Context) {
 		c.File("./favicon.ico")
 	})
+
+	router.Use(ApiMiddleware(client))
 
 	k8s := router.Group("/v1")
 	{
@@ -36,4 +38,11 @@ func Router() *gin.Engine {
 	}
 
 	return router
+}
+
+func ApiMiddleware(client *repository.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("client", client)
+		c.Next()
+	}
 }
