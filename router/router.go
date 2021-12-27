@@ -5,9 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	repository "github.com/jcasanella/k8s_dashboard/repository"
+	"k8s.io/client-go/kubernetes"
 )
 
-func Router(client *repository.Client) *gin.Engine {
+func Router(clientset *kubernetes.Clientset) *gin.Engine {
 	router := gin.Default()
 
 	router.Static("/assets", "./assets")
@@ -21,7 +22,7 @@ func Router(client *repository.Client) *gin.Engine {
 		c.File("./favicon.ico")
 	})
 
-	router.Use(ApiMiddleware(client))
+	router.Use(ApiMiddleware(clientset))
 
 	k8s := router.Group("/v1")
 	{
@@ -40,9 +41,9 @@ func Router(client *repository.Client) *gin.Engine {
 	return router
 }
 
-func ApiMiddleware(client *repository.Client) gin.HandlerFunc {
+func ApiMiddleware(clientset *kubernetes.Clientset) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Set("client", client)
+		c.Set("Clientset", clientset)
 		c.Next()
 	}
 }
