@@ -7,26 +7,24 @@ import (
 	// "strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jcasanella/k8s_dashboard/configcontext"
 	"github.com/jcasanella/k8s_dashboard/models"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
-type Client struct {
+type ClientPod struct {
 	Clientset kubernetes.Interface
 	Pod       v1.PodInterface
 }
 
-type Pod interface {
+type PodOpers interface {
 	List() []models.Pod
 	Count() int
 	Create()
 }
 
-func (c Client) List() []models.Pod {
+func (c ClientPod) List() []models.Pod {
 	pods, err := c.Pod.List(context.TODO(), meta.ListOptions{})
 	if err != nil {
 		panic(err.Error())
@@ -40,7 +38,7 @@ func (c Client) List() []models.Pod {
 	return names
 }
 
-func (c Client) Count() int {
+func (c ClientPod) Count() int {
 	pods, err := c.Pod.List(context.TODO(), meta.ListOptions{})
 	if err != nil {
 		panic(err.Error())
@@ -71,24 +69,24 @@ func ListPods(c *gin.Context) {
 	// }
 
 	// client := newClient()
-	client := c.MustGet("client").(*Client)
+	clientset := c.MustGet("client").(*kubernetes.Clientset)
+	client := newClientPod(clientset)
 	names := client.List()
 
 	c.IndentedJSON(http.StatusOK, names)
 }
 
 func CountPods(c *gin.Context) {
-	client := c.MustGet("client").(*Client)
+	clientset := c.MustGet("client").(*kubernetes.Clientset)
+	client := newClientPod(clientset)
 	numPods := client.Count()
 
 	c.IndentedJSON(http.StatusOK, numPods)
 }
 
-func getK8sClient() (*kubernetes.Clientset, error) {
-	config, err := clientcmd.BuildConfigFromFlags("", *configcontext.Kubeconfig)
-	if err != nil {
-		panic(err.Error())
+func newClientPod(clientset *kubernetes.Clientset) *ClientPod {
+	return &ClientPod{
+		Clientset: clientset,
+		Pod:       clientset.CoreV1().Pods("dma"),
 	}
-
-	return kubernetes.NewForConfig(config)
 }
