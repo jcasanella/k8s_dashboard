@@ -1,5 +1,6 @@
 BINARY_NAME=k8s_dashboard
 OUTDIR=bin
+UNAME_S := $(shell uname)
 
 .PHONY:fmt
 fmt:
@@ -15,9 +16,18 @@ vet: lint
 
 .PHONY:build
 build: vet
-	echo "Building for linux and windows"
-	GOOS=linux GOARCH=386 go build -o ${OUTDIR}/${BINARY_NAME} main.go
-	GOOS=windows GOARCH=386 go build -o ${OUTDIR}/${BINARY_NAME}_win main.go
+ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
+	@echo "Building for $(OS) platform"
+	GOOS=windows GOARCH=amd64 go build -o ${OUTDIR}/${BINARY_NAME}_win main.go
+else ifeq ($(UNAME_S),Linux)
+	@echo "Building for $(UNAME_S) platform"
+	GOOS=linux GOARCH=amd64 go build -o ${OUTDIR}/${BINARY_NAME} main.go
+else ifeq ($(UNAME_S),Darwin)
+	@echo "Building for $(UNAME_S) platform"
+	GOOS=darwin GOARCH=amd64 go build -o ${OUTDIR}/${BINARY_NAME}_darwin main.go
+else
+	@echo "Platform $(UNAME_S) not supported"
+endif
 
 .PHONY:run
 run:
