@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jcasanella/k8s_dashboard/models"
 	repository "github.com/jcasanella/k8s_dashboard/repository"
-	"k8s.io/client-go/kubernetes"
 )
 
-func Router(clientset *kubernetes.Clientset) *gin.Engine {
+func Router(clientset *models.K8s) *gin.Engine {
 	router := gin.Default()
 
 	router.Static("/assets", "./assets")
@@ -41,7 +41,7 @@ func Router(clientset *kubernetes.Clientset) *gin.Engine {
 	return router
 }
 
-func ApiMiddleware(clientset *kubernetes.Clientset) gin.HandlerFunc {
+func ApiMiddleware(clientset *models.K8s) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set("Clientset", clientset)
 		c.Next()

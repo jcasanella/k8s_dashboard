@@ -36,6 +36,13 @@ func (c ClientConfigMap) List() []models.ConfigMap {
 	return names
 }
 
+func ListConfigMaps(c *gin.Context) {
+	k8s := c.MustGet("Clientset").(*models.K8s)
+	clientConfigMap := newClientConfigMap(k8s)
+	names := clientConfigMap.List()
+	c.IndentedJSON(http.StatusOK, names)
+}
+
 func (c ClientConfigMap) Count() int {
 	configmaps, err := c.Configmap.List(context.TODO(), meta.ListOptions{})
 	if err != nil {
@@ -45,23 +52,16 @@ func (c ClientConfigMap) Count() int {
 	return len(configmaps.Items)
 }
 
-func ListConfigMaps(c *gin.Context) {
-	clientset := c.MustGet("Clientset").(*kubernetes.Clientset)
-	client := newClientConfigMap(clientset)
-	names := client.List()
-	c.IndentedJSON(http.StatusOK, names)
-}
-
 func CountConfigMaps(c *gin.Context) {
-	Clientset := c.MustGet("Clientset").(*kubernetes.Clientset)
-	client := newClientConfigMap(Clientset)
-	numConfigMaps := client.Count()
+	k8s := c.MustGet("Clientset").(*models.K8s)
+	clientConfigMap := newClientConfigMap(k8s)
+	numConfigMaps := clientConfigMap.Count()
 	c.IndentedJSON(http.StatusOK, numConfigMaps)
 }
 
-func newClientConfigMap(clientset *kubernetes.Clientset) *ClientConfigMap {
+func newClientConfigMap(k8s *models.K8s) *ClientConfigMap {
 	return &ClientConfigMap{
-		Clientset: clientset,
-		Configmap: clientset.CoreV1().ConfigMaps("dma"),
+		Clientset: k8s.Clientset,
+		Configmap: k8s.Clientset.CoreV1().ConfigMaps("dma"),
 	}
 }

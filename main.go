@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/jcasanella/k8s_dashboard/configcontext"
+	"github.com/jcasanella/k8s_dashboard/models"
 	"github.com/jcasanella/k8s_dashboard/router"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -26,11 +27,13 @@ func getK8sClient() (*kubernetes.Clientset, error) {
 	return kubernetes.NewForConfig(config)
 }
 
-func newClient() *kubernetes.Clientset {
+func newClient() *models.K8s {
 	clientSet, err := getK8sClient()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return clientSet
+	return &models.K8s{
+		Clientset: clientSet,
+	}
 }
