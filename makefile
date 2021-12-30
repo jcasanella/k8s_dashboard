@@ -29,6 +29,15 @@ else
 	@echo "Platform $(UNAME_S) not supported"
 endif
 
+.PHONY:test
+test: build
+	go test -v ./...
+
+.PHONY:test-cover
+test-cover: test
+	go test -cover -coverprofile=coverage.out
+	go tool cover -html=coverage.out -o coverage.html 
+
 .PHONY:run
 run:
 	./bin/${BINARY_NAME}
