@@ -40,24 +40,6 @@ func (c ClientPod) List() []models.Pod {
 	return names
 }
 
-func (c ClientPod) Count() int {
-	pods, err := c.Pod.List(context.TODO(), meta.ListOptions{})
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return len(pods.Items)
-}
-
-func (c ClientPod) Create(pod *v1core.Pod) (*v1core.Pod, error) {
-	if pod, err := c.Pod.Create(context.TODO(), pod, meta.CreateOptions{}); err != nil {
-		log.Panicf("Error creating pod %s:%s", pod.Name, err.Error())
-		return nil, err
-	}
-
-	return pod, nil
-}
-
 func ListPods(c *gin.Context) {
 	// limitQuery := c.DefaultQuery("limit", "10")
 	// limitValue, err := strconv.ParseInt(limitQuery, 10, 64)
@@ -80,24 +62,42 @@ func ListPods(c *gin.Context) {
 	// }
 
 	// client := newClient()
-	clientset := c.MustGet("client").(*kubernetes.Clientset)
-	client := newClientPod(clientset)
-	names := client.List()
+	k8s := c.MustGet("client").(*models.K8s)
+	clientPod := newClientPod(k8s)
+	names := clientPod.List()
 
 	c.IndentedJSON(http.StatusOK, names)
 }
 
+func (c ClientPod) Count() int {
+	pods, err := c.Pod.List(context.TODO(), meta.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return len(pods.Items)
+}
+
 func CountPods(c *gin.Context) {
-	clientset := c.MustGet("client").(*kubernetes.Clientset)
-	client := newClientPod(clientset)
-	numPods := client.Count()
+	k8s := c.MustGet("client").(*models.K8s)
+	clientPod := newClientPod(k8s)
+	numPods := clientPod.Count()
 
 	c.IndentedJSON(http.StatusOK, numPods)
 }
 
-func newClientPod(clientset *kubernetes.Clientset) *ClientPod {
+func (c ClientPod) Create(pod *v1core.Pod) (*v1core.Pod, error) {
+	if pod, err := c.Pod.Create(context.TODO(), pod, meta.CreateOptions{}); err != nil {
+		log.Panicf("Error creating pod %s:%s", pod.Name, err.Error())
+		return nil, err
+	}
+
+	return pod, nil
+}
+
+func newClientPod(k8s *models.K8s) *ClientPod {
 	return &ClientPod{
-		Clientset: clientset,
-		Pod:       clientset.CoreV1().Pods("dma"),
+		Clientset: k8s.Clientset,
+		Pod:       k8s.Clientset.CoreV1().Pods("dma"),
 	}
 }

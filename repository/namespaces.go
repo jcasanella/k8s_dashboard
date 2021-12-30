@@ -42,16 +42,16 @@ func (c ClientNamespace) List() []models.Namespace {
 }
 
 func ListNamespaces(c *gin.Context) {
-	clientset := c.MustGet("client").(*kubernetes.Clientset)
-	client := newClientNamespace(clientset)
-	names := client.List()
+	k8s := c.MustGet("client").(*models.K8s)
+	clientNamespace := newClientNamespace(k8s)
+	names := clientNamespace.List()
 
 	c.IndentedJSON(http.StatusOK, names)
 }
 
-func newClientNamespace(clientset *kubernetes.Clientset) *ClientNamespace {
+func newClientNamespace(k8s *models.K8s) *ClientNamespace {
 	return &ClientNamespace{
-		Clientset: clientset,
-		Namespace: clientset.CoreV1().Namespaces(),
+		Clientset: k8s.Clientset,
+		Namespace: k8s.Clientset.CoreV1().Namespaces(),
 	}
 }
