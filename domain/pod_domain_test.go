@@ -1,4 +1,4 @@
-package repository
+package domain
 
 import (
 	"testing"
@@ -67,20 +67,20 @@ func TestListPods(t *testing.T) {
 		t.Fatal("Should not exist any pod")
 	}
 
-	for _, pod := range podsToTest {
-		t.Run(pod.Name, func(t *testing.T) {
-			if _, err := client.Create(pod); err != nil {
-				t.Fatal("Error creating Pod")
+	for _, expected := range podsToTest {
+		t.Run(expected.Name, func(t *testing.T) {
+			if _, err := client.Create(expected); err != nil {
+				t.Fatalf("Error creating Pod %s", expected.Name)
 			}
 
-			listPods := client.List()
+			actual := client.List()
 			numExpected++
-			if len(listPods) != numExpected {
-				t.Fatalf("The expected number of pods is %d numExpected, the actual number is %d", numExpected, len(listPods))
+			if len(actual) != numExpected {
+				t.Fatalf("The expected number of pods is %d numExpected, the actual number is %d", numExpected, len(actual))
 			}
 
-			if isPodNameInSlice(listPods, pod.Name) != true {
-				t.Fatalf("The expected pod name %s but does not exist", pod.Name)
+			if isPodNameInSlice(actual, expected.Name) != true {
+				t.Fatalf("The expected pod name %s but does not exist", expected.Name)
 			}
 		})
 	}
@@ -94,16 +94,33 @@ func TestCountPods(t *testing.T) {
 		t.Fatal("Should not exist any pod")
 	}
 
-	for _, pod := range podsToTest {
-		t.Run(pod.Name, func(t *testing.T) {
-			if _, err := client.Create(pod); err != nil {
-				t.Fatal("Error creating Pod")
+	for _, expected := range podsToTest {
+		t.Run(expected.Name, func(t *testing.T) {
+			if _, err := client.Create(expected); err != nil {
+				t.Fatalf("Error creating Pod %s", expected.Name)
 			}
 
-			numPods := client.Count()
+			actual := client.Count()
 			numExpected++
-			if numPods != numExpected {
-				t.Fatalf("The expected number of pods is %d numExpected, the actual number is %d", numExpected, numPods)
+			if actual != numExpected {
+				t.Fatalf("The expected number of pods is %d numExpected, the actual number is %d", numExpected, actual)
+			}
+		})
+	}
+}
+
+func TestCreatePods(t *testing.T) {
+	client := newTestClientPods()
+
+	for _, expected := range podsToTest {
+		t.Run(expected.Name, func(t *testing.T) {
+			actual, err := client.Create(expected)
+			if err != nil {
+				t.Fatalf("Error creating pod: %s", expected.Name)
+			}
+
+			if expected != actual {
+				t.Fatal("Pod created is different from expected")
 			}
 		})
 	}

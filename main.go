@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/jcasanella/k8s_dashboard/configcontext"
+	"github.com/jcasanella/k8s_dashboard/config"
 	"github.com/jcasanella/k8s_dashboard/models"
 	"github.com/jcasanella/k8s_dashboard/router"
 	"k8s.io/client-go/kubernetes"
@@ -19,7 +19,7 @@ func main() {
 }
 
 func getK8sClient() (*kubernetes.Clientset, error) {
-	config, err := clientcmd.BuildConfigFromFlags("", *configcontext.Kubeconfig)
+	config, err := clientcmd.BuildConfigFromFlags("", *config.Kubeconfig)
 	if err != nil {
 		panic(err.Error())
 	}
