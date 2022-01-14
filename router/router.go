@@ -28,13 +28,14 @@ func Router(clientset *models.K8s) *gin.Engine {
 	{
 		v1 := k8s.Group("/k8s")
 		{
-			v1.GET("/pods/count", repository.CountPods)
 			v1.GET("/pods", repository.ListPods)
+			v1.GET("/pods/count", repository.CountPods)
 
 			v1.GET("/configmaps", repository.ListConfigMaps)
 			v1.GET("/configmaps/count", repository.CountConfigMaps)
 
 			v1.GET("namespaces", repository.ListNamespaces)
+			v1.GET("namespaces/count", repository.CountNamespaces)
 		}
 	}
 

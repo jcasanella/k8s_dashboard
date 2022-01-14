@@ -46,10 +46,11 @@ func (c ClientPod) Count() int {
 }
 
 func (c ClientPod) Create(pod *v1core.Pod) (*v1core.Pod, error) {
-	if pod, err := c.Pod.Create(context.TODO(), pod, meta.CreateOptions{}); err != nil {
+	p, err := c.Pod.Create(context.TODO(), pod, meta.CreateOptions{})
+	if err != nil {
 		log.Panicf("Error creating pod %s:%s", pod.Name, err.Error())
 		return nil, err
 	}
 
-	return pod, nil
+	return p, nil
 }
