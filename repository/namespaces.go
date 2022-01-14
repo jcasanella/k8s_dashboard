@@ -15,7 +15,7 @@ func ListNamespaces(c *gin.Context) {
 	client := newClientNamespace(k8s)
 	ns, err := client.List()
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, map[string]interface{}{"error": strings.Join([]string(err.Error()), "; ")})
+		c.IndentedJSON(http.StatusBadRequest, map[string]interface{}{"error": strings.Join([]string{err.Error()}, "; ")})
 	}
 
 	c.IndentedJSON(http.StatusOK, ns)
@@ -26,7 +26,7 @@ func CountNamespaces(c *gin.Context) {
 	client := newClientNamespace(k8s)
 	count, err := client.Count()
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, map[string]interface{}{"error": strings.Join(err.Error(), "; ")})
+		c.IndentedJSON(http.StatusBadRequest, map[string]interface{}{"error": strings.Join([]string{err.Error()}, "; ")})
 	}
 
 	c.IndentedJSON(http.StatusOK, count)
